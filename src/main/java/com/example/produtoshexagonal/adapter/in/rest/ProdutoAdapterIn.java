@@ -2,12 +2,13 @@ package com.example.produtoshexagonal.adapter.in.rest;
 
 import com.example.produtoshexagonal.adapter.dto.ProdutoRequest;
 import com.example.produtoshexagonal.adapter.dto.ProdutoResponse;
-import com.example.produtoshexagonal.adapter.in.validator.AliquotaImpostoValidator;
+import com.example.produtoshexagonal.adapter.in.rest.validator.AliquotaImpostoValidator;
 import com.example.produtoshexagonal.application.port.in.ProdutoPortIn;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 
@@ -29,10 +30,18 @@ public class ProdutoAdapterIn {
         binder.addValidators(aliquotaImpostoValidator);
     }
 
-    @PostMapping
-    public ResponseEntity<?> save(@Valid @RequestBody ProdutoRequest request) {
+    @PostMapping()
+    public ResponseEntity<ProdutoResponse> save(@Valid @RequestBody ProdutoRequest request) {
         var produto = request.toModel();
         produto = produtoPortIn.save(produto);
         return new ResponseEntity<>(new ProdutoResponse(produto), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProdutoResponse> findById(@PathVariable Long id) {
+        var produto = produtoPortIn.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        return ResponseEntity.ok(new ProdutoResponse(produto));
     }
 }

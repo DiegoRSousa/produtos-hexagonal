@@ -34,6 +34,7 @@ public class ProdutoEntity {
     public ProdutoEntity() {}
 
     public ProdutoEntity(Produto produto) {
+        this.id = produto.getId();
         this.descricao = produto.getDescricao();
         this.preco = produto.getPreco();
         this.tipoTributacao = produto.getTipoTributacao();
